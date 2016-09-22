@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PhoneDataReader", "src\PhoneDataReader\PhoneDataReader.shproj", "{5C61758B-5B24-4CAF-9AF0-BC67B86FE9C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhoneDataReader.Net20", "src\PhoneDataReader.Net20\PhoneDataReader.Net20.csproj", "{12CF2A6B-CE0B-4178-A590-2285262DE5D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhoneDataReader.Net35", "src\PhoneDataReader.Net35\PhoneDataReader.Net35.csproj", "{E384E101-B541-4C44-8678-2C32FD3C5EA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhoneDataReader.Net40", "src\PhoneDataReader.Net40\PhoneDataReader.Net40.csproj", "{18FD0987-5768-49B1-86CF-31BCD2050DF9}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "PhoneDataReader.Dotnet", "src\PhoneDataReader.Dotnet\PhoneDataReader.Dotnet.xproj", "{3A9FC85C-06EB-4F83-8EA9-AEBA9AD52FDB}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\PhoneDataReader\PhoneDataReader.projitems*{12cf2a6b-ce0b-4178-a590-2285262de5d9}*SharedItemsImports = 4
+		src\PhoneDataReader\PhoneDataReader.projitems*{18fd0987-5768-49b1-86cf-31bcd2050df9}*SharedItemsImports = 4
+		src\PhoneDataReader\PhoneDataReader.projitems*{5c61758b-5b24-4caf-9af0-bc67b86fe9c0}*SharedItemsImports = 13
+		src\PhoneDataReader\PhoneDataReader.projitems*{e384e101-b541-4c44-8678-2c32fd3c5ea7}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12CF2A6B-CE0B-4178-A590-2285262DE5D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12CF2A6B-CE0B-4178-A590-2285262DE5D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12CF2A6B-CE0B-4178-A590-2285262DE5D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12CF2A6B-CE0B-4178-A590-2285262DE5D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E384E101-B541-4C44-8678-2C32FD3C5EA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E384E101-B541-4C44-8678-2C32FD3C5EA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E384E101-B541-4C44-8678-2C32FD3C5EA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E384E101-B541-4C44-8678-2C32FD3C5EA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18FD0987-5768-49B1-86CF-31BCD2050DF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18FD0987-5768-49B1-86CF-31BCD2050DF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18FD0987-5768-49B1-86CF-31BCD2050DF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18FD0987-5768-49B1-86CF-31BCD2050DF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A9FC85C-06EB-4F83-8EA9-AEBA9AD52FDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A9FC85C-06EB-4F83-8EA9-AEBA9AD52FDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A9FC85C-06EB-4F83-8EA9-AEBA9AD52FDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A9FC85C-06EB-4F83-8EA9-AEBA9AD52FDB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
