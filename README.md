@@ -12,4 +12,4 @@
 - JAVA
 - [PHP](./php/)
 - GO
-- Python
+- [Python](./python/)
