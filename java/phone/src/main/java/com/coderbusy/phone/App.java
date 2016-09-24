@@ -9,7 +9,16 @@ import java.io.RandomAccessFile;
  */
 public class App {
 	public static void main(String[] args) throws IOException {
-		PhoneDataReader reader = new PhoneDataReader(new RandomAccessFile("D:\\GitHub\\phone\\data\\phone.dat", "r"));
-		System.out.println(reader.search("1851105"));
+		final String dataHome = "D:\\GitHub\\phone";
+		final String dataFilePath = dataHome + "\\data\\phone.dat";
+		PhoneDataReader reader = new PhoneDataReader(new RandomAccessFile(dataFilePath, "r"));
+		PhoneData data = reader.search("1851105");
+		if(data!=null){
+			System.out.println("运营商:"+data.getTelecomOperator());
+			System.out.println("省份:"+data.getProvince());
+			System.out.println("城市:"+data.getCity());
+		}else{
+			System.out.println("数据未找到");
+		}
 	}
 }

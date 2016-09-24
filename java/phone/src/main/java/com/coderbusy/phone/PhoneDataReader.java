@@ -11,11 +11,11 @@ import java.util.Map;
 public class PhoneDataReader {
 	private RandomAccessFile _file;
 	private PhoneDataHeader _header;
-	private Map<Integer,String> _dataCache;
+	private Map<Integer, String> _dataCache;
 
 	public PhoneDataReader(RandomAccessFile file) {
 		this._file = file;
-		this._dataCache = new HashMap<Integer,String>();
+		this._dataCache = new HashMap<Integer, String>();
 	}
 
 	public PhoneDataHeader getHeader() throws IOException {
@@ -49,10 +49,41 @@ public class PhoneDataReader {
 		PhoneDataHeader header = this.getHeader();
 		for (int i = 0; i < groupData.size(); i++) {
 			int id = groupData.get(i);
-			if(!this._dataCache.containsKey(id)){
-				this._dataCache.put(id, id+"");
+			if (!this._dataCache.containsKey(id)) {
+				int location = header.getDataOffset() + id * header.getDataLength();
+				this._file.seek(location);
+				String str = this.readString(header.getDataLength()).trim();
+				this._dataCache.put(id, str);
 			}
-			data.setAreaCode(this._dataCache.get(id));
+			String value = this._dataCache.get(id);
+			switch (i) {
+			case 0:
+				data.setCorp(value);
+				break;
+			case 1:
+				data.setProvince(value);
+				break;
+			case 2:
+				data.setCity(value);
+				break;
+			case 3:
+				data.setAreaCode(value);
+				break;
+			case 4:
+				data.setPostCode(value);
+				break;
+			case 5:
+				data.setTelecomOperator(value);
+				break;
+			case 6:
+				data.setVirtualNetworkOperator(value);
+				break;
+			case 7:
+				data.setCard(value);
+				break;
+			default:
+				break;
+			}
 		}
 		return data;
 	}
@@ -83,9 +114,9 @@ public class PhoneDataReader {
 		header.setTotal(this.readInt());
 		header.setIndexOffset(this.readInt());
 		header.setGroupOffset(this.readInt());
-		header.setGroupItemsCount(this._file.readByte());
+		header.setGroupItemsCount(this.readByte());
 		header.setDataOffset(this.readInt());
-		header.setDataLength(this._file.readByte());
+		header.setDataLength(this.readByte());
 		header.setPubDate(this.readInt());
 	}
 
@@ -100,6 +131,10 @@ public class PhoneDataReader {
 		return list;
 	}
 
+	private byte readByte() throws IOException {
+		return this._file.readByte();
+	}
+
 	private int readInt() throws IOException {
 		byte[] buffer = new byte[4];
 		this._file.read(buffer, 0, buffer.length);
@@ -107,12 +142,14 @@ public class PhoneDataReader {
 	}
 
 	private int readUnsignedShort() throws IOException {
-		return this._file.readUnsignedShort();
+		byte[] buffer = new byte[2];
+		this._file.read(buffer, 0, 2);
+		return (buffer[1] & 0xff) << 8 | (buffer[0] & 0xff);
 	}
 
 	private String readString(int length) throws IOException {
 		byte[] buffer = new byte[length];
 		this._file.read(buffer, 0, length);
-		return new String(buffer);
+		return new String(buffer, "UTF-8");
 	}
 }

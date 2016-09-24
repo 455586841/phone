@@ -1,8 +1,5 @@
 package com.coderbusy.phone;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
-
 public class PhoneDataHeader {
 	private String prefix;
 	private int total;

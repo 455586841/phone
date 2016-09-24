@@ -6,10 +6,7 @@
 
 ## 语言支持
 
-*无链接的语言表示开发中*
-
 - [C#](./csharp/)
-- JAVA
+- [JAVA](./java/)
 - [PHP](./php/)
-- GO
 - [Python](./python/)
