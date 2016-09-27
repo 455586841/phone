@@ -7,11 +7,11 @@ namespace PhoneDataReader
 {
     public class PhoneDataReader : IDisposable
     {
-        private readonly Stream _stream;
+        private readonly Dictionary<ushort, string> _dataCache = new Dictionary<ushort, string>();
         private readonly Encoding _encoding = Encoding.UTF8;
-        private readonly Dictionary<ushort, String> _dataCache = new Dictionary<ushort, string>();
+        private readonly Stream _stream;
 
-        private Header _header;
+        private PhoneDataHeader _phoneDataHeader;
 
         public PhoneDataReader(Stream stream)
         {
@@ -28,27 +28,27 @@ namespace PhoneDataReader
         {
         }
 
-        public Header GetHeader()
+        public PhoneDataHeader GetHeader()
         {
-            if (_header == null)
+            if (_phoneDataHeader == null)
             {
-                _header = new Header();
+                _phoneDataHeader = new PhoneDataHeader();
                 _stream.Seek(0, SeekOrigin.Begin);
-                Byte[] buffer = new byte[26];
+                var buffer = new byte[26];
                 _stream.Read(buffer, 0, 26);
-                _header.Prefix = _encoding.GetString(buffer, 0, 4);
-                _header.Total = BitConverter.ToInt32(buffer, 4);
-                _header.IndexOffset = BitConverter.ToInt32(buffer, 8);
-                _header.GroupOffset = BitConverter.ToInt32(buffer, 12);
-                _header.GroupItemsCount = buffer[16];
-                _header.DataOffset = BitConverter.ToInt32(buffer, 17);
-                _header.DataLength = buffer[21];
-                _header.PubDate = BitConverter.ToInt32(buffer, 22);
+                _phoneDataHeader.Prefix = _encoding.GetString(buffer, 0, 4);
+                _phoneDataHeader.Total = BitConverter.ToInt32(buffer, 4);
+                _phoneDataHeader.IndexOffset = BitConverter.ToInt32(buffer, 8);
+                _phoneDataHeader.GroupOffset = BitConverter.ToInt32(buffer, 12);
+                _phoneDataHeader.GroupItemsCount = buffer[16];
+                _phoneDataHeader.DataOffset = BitConverter.ToInt32(buffer, 17);
+                _phoneDataHeader.DataLength = buffer[21];
+                _phoneDataHeader.PubDate = BitConverter.ToInt32(buffer, 22);
             }
-            return _header;
+            return _phoneDataHeader;
         }
 
-        public List<string> Search(string phone)
+        public PhoneData Search(string phone)
         {
             if (string.IsNullOrEmpty(phone) || (phone.Length < 7) || (phone.Length > 11))
                 throw new ArgumentNullException(nameof(phone));
@@ -57,15 +57,48 @@ namespace PhoneDataReader
             {
                 phoneSection = phone.Substring(0, 7);
             }
-            Int32 number;
-            if (Int32.TryParse(phoneSection, out number))
+            int number;
+            if (int.TryParse(phoneSection, out number))
             {
-                var header = this.GetHeader();
-                var groupId = this.SearchGroupId(number, header.IndexOffset, header.GroupOffset);
+                var header = GetHeader();
+                var groupId = SearchGroupId(number, header.IndexOffset, header.GroupOffset);
                 if (groupId != null)
                 {
-                    var dataIdList = this.GetGroupDatas(groupId.Value);
-                    return this.GetDatas(dataIdList);
+                    var dataIdList = GetGroupDatas(groupId.Value);
+                    var data = GetDatas(dataIdList);
+                    var result = new PhoneData();
+                    for (var i = 0; i < data.Count; i++)
+                    {
+                        var value = data[i];
+                        switch (i)
+                        {
+                            case 0:
+                                result.Corp = value;
+                                break;
+                            case 1:
+                                result.Province = value;
+                                break;
+                            case 2:
+                                result.City = value;
+                                break;
+                            case 3:
+                                result.AreaCode = value;
+                                break;
+                            case 4:
+                                result.PostCode = value;
+                                break;
+                            case 5:
+                                result.TelecomOperator = value;
+                                break;
+                            case 6:
+                                result.VirtualNetworkOperator = value;
+                                break;
+                            case 7:
+                                result.Card = value;
+                                break;
+                        }
+                    }
+                    return result;
                 }
             }
             else
@@ -75,15 +108,15 @@ namespace PhoneDataReader
             return null;
         }
 
-        private ushort? SearchGroupId(Int32 phone, Int32 startOffset, Int32 stopOffset)
+        private ushort? SearchGroupId(int phone, int startOffset, int stopOffset)
         {
             if (startOffset > stopOffset)
             {
                 return null;
             }
-            var mind = (stopOffset - startOffset) / 8 / 2 * 8 + startOffset;
+            var mind = (stopOffset - startOffset)/8/2*8 + startOffset;
             _stream.Seek(mind, SeekOrigin.Begin);
-            var index = new Index();
+            var index = new PhoneDataIndex();
             index.Read(_stream);
             if (phone >= index.Number && phone <= index.Number + index.Offset)
             {
@@ -100,31 +133,31 @@ namespace PhoneDataReader
             return null;
         }
 
-        private List<ushort> GetGroupDatas(UInt16 groupId)
+        private List<ushort> GetGroupDatas(ushort groupId)
         {
-            var header = this.GetHeader();
-            _stream.Seek(header.GroupOffset + groupId * header.GroupItemsCount * 2, SeekOrigin.Begin);
-            var length = _header.GroupItemsCount;
+            var header = GetHeader();
+            _stream.Seek(header.GroupOffset + groupId*header.GroupItemsCount*2, SeekOrigin.Begin);
+            var length = _phoneDataHeader.GroupItemsCount;
             var list = new List<ushort>();
-            var buffer = new Byte[length * 2];
+            var buffer = new byte[length*2];
             _stream.Read(buffer, 0, buffer.Length);
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
-                list.Add(BitConverter.ToUInt16(buffer, i * 2));
+                list.Add(BitConverter.ToUInt16(buffer, i*2));
             }
             return list;
         }
 
-        private List<String> GetDatas(List<ushort> dataIdList)
+        private List<string> GetDatas(List<ushort> dataIdList)
         {
-            var names = new List<String>();
-            var header = this.GetHeader();
+            var names = new List<string>();
+            var header = GetHeader();
             foreach (var id in dataIdList)
             {
                 if (!_dataCache.ContainsKey(id))
                 {
-                    _stream.Seek(header.DataOffset + id * header.DataLength, SeekOrigin.Begin);
-                    var buffer = new Byte[header.DataLength];
+                    _stream.Seek(header.DataOffset + id*header.DataLength, SeekOrigin.Begin);
+                    var buffer = new byte[header.DataLength];
                     _stream.Read(buffer, 0, buffer.Length);
                     var name = _encoding.GetString(buffer).Trim('\0');
                     _dataCache.Add(id, name);
@@ -133,35 +166,6 @@ namespace PhoneDataReader
             }
 
             return names;
-        }
-
-        public class Header
-        {
-            public string Prefix { get; set; }
-            public int Total { get; set; }
-            public int IndexOffset { get; set; }
-            public int GroupOffset { get; set; }
-            public Byte GroupItemsCount { get; set; }
-            public int DataOffset { get; set; }
-            public byte DataLength { get; set; }
-            public int PubDate { get; set; }
-        }
-        public class Index
-        {
-            public Int32 Number { get; set; }
-            public ushort Offset { get; set; }
-            public ushort GroupId { get; set; }
-
-            public void Read(Stream stream)
-            {
-                var buffer = new Byte[8];
-                if (stream.Read(buffer, 0, 8) == 8)
-                {
-                    this.Number = BitConverter.ToInt32(buffer, 0);
-                    this.Offset = BitConverter.ToUInt16(buffer, 4);
-                    this.GroupId = BitConverter.ToUInt16(buffer, 6);
-                }
-            }
         }
     }
 }

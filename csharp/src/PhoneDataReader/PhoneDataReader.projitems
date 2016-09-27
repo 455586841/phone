@@ -9,6 +9,9 @@
     <Import_RootNamespace>PhoneDataReader</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)PhoneData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PhoneDataHeader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PhoneDataIndex.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PhoneDataReader.cs" />
   </ItemGroup>
 </Project>
